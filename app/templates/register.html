@@ -1,3 +1,33 @@
 {% extends "layout.html" %}
 {% block content %}
+<html>
+<body>
+<div class="grandParentContainer">
+    <div class="parentContainer">
+        <div class="leftside">
+            <h1>Register for New Account</h1>
+        </div>
+
+        <div class="rightside">
+            <form class="form-register" method="post">
+                <label for="newUsername">Enter a Username</label><input type="text" id="newUsername" class="form-control"
+                                                             placeholder="Enter Username"
+                                                             name="username" required autofocus>
+                <label for="inputEmail">Enter Email</label><input type="Email" id="inputEmail" class="form-control"
+                                                       placeholder="Enter Email" name="email" required
+                                                       autofocus>
+                <label for="newPassword">Enter a Password</label><input type="password" id="newPassword" class="form-control"
+                                                             placeholder="Enter Password"
+                                                             name="password" required>
+                <label for="confirmPassword">Confirm Password</label><input type="password" id="confirmPassword"
+                                                                    class="form-control" placeholder="Confirm Password"
+                                                                    name="confirmpassword" required>
+                <br>
+                <button class="btn btn-primary" type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
 {% endblock %}
