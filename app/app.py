@@ -4,6 +4,7 @@ from flask import Flask, request, Response, redirect
 from flask import render_template
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 mysql = MySQL(cursorclass=DictCursor)
@@ -15,8 +16,30 @@ app.config['MYSQL_DATABASE_PORT'] = 3306
 app.config['MYSQL_DATABASE_DB'] = 'citiesData'
 mysql.init_app(app)
 
-
 @app.route('/', methods=['GET'])
+def login():
+    cursor = mysql.get_db().cursor()
+    username = request.form.get('inputUsername')
+    password = request.form.get('inputPassword')
+    sql_query = """SELECT passwordHash FROM users WHERE users.username = %s """
+    cursor.execute(sql_query, username)
+    result = cursor.fetchall()
+    if check_password_hash(result,password):
+        return redirect("/home", code=302)
+    return render_template('login.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+    cursor = mysql.get_db().cursor()
+    hash_pass = generate_password_hash(request.form.get('newPassword'))
+    inputData = (request.form.get('newUsername'),request.form.get('inputEmail'),hash_pass)
+    sql_insert_query = """INSERT INTO users (username, email, passwordHash) VALUES (%s,%s, %s)"""
+    cursor.execute(sql_insert_query, inputData)
+    mysql.get_db().commit()
+    return redirect("/", code=302)
+
+
+@app.route('/home', methods=['GET'])
 def index():
     user = {'username': 'Cities Project'}
     cursor = mysql.get_db().cursor()
@@ -51,7 +74,7 @@ def form_update_post(city_id):
     %s, t.fldAbbreviation = %s, t.fldCapitalStatus = %s, t.fldPopulation = %s WHERE t.id = %s """
     cursor.execute(sql_update_query, inputData)
     mysql.get_db().commit()
-    return redirect("/", code=302)
+    return redirect("/home", code=302)
 
 @app.route('/cities/new', methods=['GET'])
 def form_insert_get():
@@ -67,7 +90,7 @@ def form_insert_post():
     sql_insert_query = """INSERT INTO tblCitiesImport (fldName,fldLat,fldLong,fldCountry,fldAbbreviation,fldCapitalStatus,fldPopulation) VALUES (%s,%s, %s,%s, %s,%s, %s)"""
     cursor.execute(sql_insert_query, inputData)
     mysql.get_db().commit()
-    return redirect("/", code=302)
+    return redirect("/home", code=302)
 
 
 @app.route('/delete/<int:city_id>', methods=['POST'])
@@ -76,7 +99,7 @@ def form_delete_post(city_id):
     sql_delete_query = """DELETE FROM tblCitiesImport WHERE id = %s """
     cursor.execute(sql_delete_query, city_id)
     mysql.get_db().commit()
-    return redirect("/", code=302)
+    return redirect("/home", code=302)
 
 
 
