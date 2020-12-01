@@ -20,10 +20,11 @@ mysql.init_app(app)
 def login():
     if request.method == ('POST'):
         cursor = mysql.get_db().cursor()
-        username = request.form.get('inputUsername')
+        username = (request.form.get('inputUsername'))
         password = request.form.get('inputPassword')
-        sql_query = """SELECT passwordHash FROM users WHERE users.username = %s """
-        cursor.execute(sql_query, username)
+        sql_query = """SELECT passwordHash FROM users u WHERE u.username = %s """
+        authInfo = (username,)
+        cursor.execute(sql_query, authInfo)
         result = cursor.fetchall()
         if check_password_hash(result,password):
             return redirect("/home", code=302)
