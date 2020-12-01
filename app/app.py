@@ -16,22 +16,28 @@ app.config['MYSQL_DATABASE_PORT'] = 3306
 app.config['MYSQL_DATABASE_DB'] = 'citiesData'
 mysql.init_app(app)
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def login():
-    cursor = mysql.get_db().cursor()
-    username = request.form.get('inputUsername')
-    password = request.form.get('inputPassword')
-    sql_query = """SELECT passwordHash FROM users WHERE users.username = %s """
-    cursor.execute(sql_query, username)
-    result = cursor.fetchall()
-    if check_password_hash(result,password):
-        return redirect("/home", code=302)
+    if request.method == ('POST'):
+        cursor = mysql.get_db().cursor()
+        username = request.form.get('inputUsername')
+        password = request.form.get('inputPassword')
+        sql_query = """SELECT passwordHash FROM users WHERE users.username = %s """
+        cursor.execute(sql_query, username)
+        result = cursor.fetchall()
+        if check_password_hash(result,password):
+            return redirect("/home", code=302)
     return render_template('login.html')
 
-@app.route('/register', methods=['POST'])
-def register():
+@app.route('/register', methods=['GET'])
+def register_get():
     cursor = mysql.get_db().cursor()
-    hash_pass = generate_password_hash(request.form.get('newPassword'))
+    return render_template('register.html', title='Registration')
+
+@app.route('/register', methods=['POST'])
+def register_post():
+    cursor = mysql.get_db().cursor()
+    hash_pass = generate_password_hash(str(request.form.get('newPassword')))
     inputData = (request.form.get('newUsername'),request.form.get('inputEmail'),hash_pass)
     sql_insert_query = """INSERT INTO users (username, email, passwordHash) VALUES (%s,%s, %s)"""
     cursor.execute(sql_insert_query, inputData)

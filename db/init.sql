@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS users (
     `id` INT AUTO_INCREMENT,
     `username` VARCHAR(21) CHARACTER SET utf8,
     `email` VARCHAR(21) CHARACTER SET utf8,
-    `passwordHash` VARCHAR(21) CHARACTER SET utf8,
+    `passwordHash` VARCHAR(99) CHARACTER SET utf8,
     PRIMARY KEY (`id`)
 );
 INSERT INTO users (username, email, passwordHash) VALUES
