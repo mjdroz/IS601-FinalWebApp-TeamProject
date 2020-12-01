@@ -2,6 +2,7 @@ FROM python:3.8
 
 EXPOSE 5000
 
+ADD . /app
 WORKDIR /app
 
 COPY requirements.txt /app
