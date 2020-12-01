@@ -1,3 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
+<html>
+<body>
+<div class="grandParentContainer">
+    <div class="parentContainer">
+        <form class="form-signin" method="post">
+            <h1>Sign in to Your Account</h1>
+            <label for="inputUsername">Username</label><input type="text" id="inputUsername" class="form-control" placeholder="Username" name="username" required>
+            <label for="inputPassword">Password</label><input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password"
+                                                      required>
+            <br>
+            <button class="btn btn-primary" type="submit">Sign in</button>
+            <div class="createaccount">
+                Don't have an account? <a href="/register">Register</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
 {% endblock %}
