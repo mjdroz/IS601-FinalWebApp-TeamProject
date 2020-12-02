@@ -249,3 +249,13 @@ INSERT INTO tblCitiesImport (fldName,fldLat,fldLong,fldCountry,fldAbbreviation,f
     ('Louisville',38.1663,-85.6485,'United States','USA','NA',1011696),
     ('Cologne',50.93,6.95,'Germany','DEU','NA',1004000),
     ('Qinhuangdao',39.9304,119.62,'China','CHN','NA',1003000);
+
+CREATE TABLE IF NOT EXISTS users (
+    `id` INT AUTO_INCREMENT,
+    `username` VARCHAR(21) CHARACTER SET utf8,
+    `email` VARCHAR(21) CHARACTER SET utf8,
+    `passwordHash` VARCHAR(99) CHARACTER SET utf8,
+    PRIMARY KEY (`id`)
+);
+INSERT INTO users (username, email, passwordHash) VALUES
+    ('admin','tester@gmail.com', 'adminpwd')
