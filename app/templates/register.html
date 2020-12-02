@@ -1,33 +1,56 @@
-{% extends "layout.html" %}
-{% block content %}
-<html>
-<body>
-<div class="grandParentContainer">
-    <div class="parentContainer">
-        <div class="leftside">
-            <h1>Register for New Account</h1>
-        </div>
+<!doctype html>
+<html lang="en">
+<head>
 
-        <div class="rightside">
-            <form class="form-register" method="post">
-                <label for="newUsername">Enter a Username</label><input type="text" id="newUsername" class="form-control"
-                                                             placeholder="Enter Username"
-                                                             name="username" required autofocus>
-                <label for="inputEmail">Enter Email</label><input type="Email" id="inputEmail" class="form-control"
-                                                       placeholder="Enter Email" name="email" required
-                                                       autofocus>
-                <label for="newPassword">Enter a Password</label><input type="password" id="newPassword" class="form-control"
-                                                             placeholder="Enter Password"
-                                                             name="password" required>
-                <label for="confirmPassword">Confirm Password</label><input type="password" id="confirmPassword"
-                                                                    class="form-control" placeholder="Confirm Password"
-                                                                    name="confirmpassword" required>
-                <br>
-                <button class="btn btn-primary" type="submit">Register</button>
-            </form>
+    <!-- Required meta tags -->
+
+    <!-- Bootstrap CSS -->
+
+
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" rel="stylesheet">
+    {% if user %}
+    <title>Welcome to {{ user.username }}'s site</title>
+    {% else %}
+    <title>Welcome to My Site!</title>
+    {% endif %}
+</head>
+<body>
+<div class="d-flex justify-content-center align-items-center">
+    <div class="grandParentContainer">
+        <div class="parentContainer">
+            <div class="top">
+                <h1>Register for New Account</h1>
+            </div>
+
+            <div class="info">
+                <form class="form-register" method="post">
+                    <label for="newUsername">Enter a Username</label><input type="text" id="newUsername"
+                                                                            class="form-control"
+                                                                            placeholder="Enter Username"
+                                                                            name="username" required autofocus>
+                    <label for="inputEmail">Enter Email</label><input type="Email" id="inputEmail" class="form-control"
+                                                                      placeholder="Enter Email" name="email" required
+                                                                      autofocus>
+                    <label for="newPassword">Enter a Password</label><input type="password" id="newPassword"
+                                                                            class="form-control"
+                                                                            placeholder="Enter Password"
+                                                                            name="password" required>
+                    <label for="confirmPassword">Confirm Password</label><input type="password" id="confirmPassword"
+                                                                                class="form-control"
+                                                                                placeholder="Confirm Password"
+                                                                                name="confirmpassword" required>
+                    <br>
+                    <button class="btn btn-primary" type="submit">Register</button>
+                    <div class="backToLogin">
+                        <a href="/">Back to the Login Page</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 </body>
 </html>
-{% endblock %}
