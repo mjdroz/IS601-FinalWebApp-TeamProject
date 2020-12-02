@@ -16,17 +16,16 @@ app.config['MYSQL_DATABASE_PORT'] = 3306
 app.config['MYSQL_DATABASE_DB'] = 'citiesData'
 mysql.init_app(app)
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == ('POST'):
         cursor = mysql.get_db().cursor()
-        username = request.form.get('inputUsername')
-        email = request.form.get('inputEmail')
-        password = request.form.get('inputPassword')
-        sql_query = ('SELECT passwordHash FROM users u WHERE u.username = %s, u.email = %s')
-        userData = (username,email)
+        username = request.form['username']
+        password = request.form['password']
+        sql_query = ('SELECT * FROM users u WHERE u.username = %s')
+        userData = (username,)
         cursor.execute(sql_query,userData)
-        result = cursor.fetchall()
+        result = cursor.fetchone()['passwordHash']
         if username == 'admin':
             if password == 'adminpwd':
                 return redirect("/home", code=302)
@@ -42,8 +41,8 @@ def register_get():
 @app.route('/register', methods=['POST'])
 def register_post():
     cursor = mysql.get_db().cursor()
-    hash_pass = generate_password_hash(str(request.form.get('newPassword')))
-    inputData = (request.form.get('newUsername'),request.form.get('inputEmail'),hash_pass)
+    hash_pass = generate_password_hash(str(request.form['password']),"sha256")
+    inputData = (request.form['username'],request.form['email'],hash_pass)
     sql_insert_query = """INSERT INTO users (username, email, passwordHash) VALUES (%s,%s, %s)"""
     cursor.execute(sql_insert_query, inputData)
     mysql.get_db().commit()
