@@ -57,6 +57,10 @@ def index():
     result = cursor.fetchall()
     return render_template('index.html', title='Home', user=user, cities=result)
 
+@app.route('/teampage', methods=['GET'])
+def teampage():
+    cursor = mysql.get_db().cursor()
+    return render_template('teampage.html', title='teampage')
 
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
