@@ -17,13 +17,14 @@
     {% for city in cities %}
     <tr>
         <td>{{ city.id }}</td>
-        <td><a href="view/{{city.id}}">{{ city.fldName }}</a></td>
+        <td>{{ city.fldName}}</td>
         <td>{{ city.fldLat }}</td>
         <td>{{ city.fldLong }}</td>
         <td>{{ city.fldCountry }}</td>
         <td>{{ city.fldAbbreviation }}</td>
         <td>{{ city.fldCapitalStatus }}</td>
         <td>{{ city.fldPopulation }}</td>
+        <td><button type="button" class="btn btn-warning">View Record</button></td>
     </tr>
     {% endfor %}
     </tbody>
