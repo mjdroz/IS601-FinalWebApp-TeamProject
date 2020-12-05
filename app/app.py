@@ -93,7 +93,7 @@ def form_update_post(city_id):
     %s, t.fldAbbreviation = %s, t.fldCapitalStatus = %s, t.fldPopulation = %s WHERE t.id = %s """
     cursor.execute(sql_update_query, inputData)
     mysql.get_db().commit()
-    return redirect("/home", code=302)
+    return redirect("/records", code=302)
 
 @app.route('/cities/new', methods=['GET'])
 def form_insert_get():
@@ -109,7 +109,7 @@ def form_insert_post():
     sql_insert_query = """INSERT INTO tblCitiesImport (fldName,fldLat,fldLong,fldCountry,fldAbbreviation,fldCapitalStatus,fldPopulation) VALUES (%s,%s, %s,%s, %s,%s, %s)"""
     cursor.execute(sql_insert_query, inputData)
     mysql.get_db().commit()
-    return redirect("/home", code=302)
+    return redirect("/records", code=302)
 
 
 @app.route('/delete/<int:city_id>', methods=['POST'])
@@ -118,7 +118,7 @@ def form_delete_post(city_id):
     sql_delete_query = """DELETE FROM tblCitiesImport WHERE id = %s """
     cursor.execute(sql_delete_query, city_id)
     mysql.get_db().commit()
-    return redirect("/home", code=302)
+    return redirect("/records", code=302)
 
 
 
