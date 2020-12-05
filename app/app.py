@@ -48,14 +48,19 @@ def register_post():
     mysql.get_db().commit()
     return redirect("/", code=302)
 
-
-@app.route('/home', methods=['GET'])
+@app.route('/home', methods = ['GET'])
 def index():
+    user = {'username': 'Cities Project'}
+    cursor = mysql.get_db().cursor()
+    return render_template('index.html', title='Home', user=user)
+
+@app.route('/records', methods=['GET'])
+def records():
     user = {'username': 'Cities Project'}
     cursor = mysql.get_db().cursor()
     cursor.execute('SELECT * FROM tblCitiesImport')
     result = cursor.fetchall()
-    return render_template('index.html', title='Home', user=user, cities=result)
+    return render_template('records.html', title='Records', user=user, cities=result)
 
 @app.route('/teampage', methods=['GET'])
 def teampage():
