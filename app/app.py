@@ -5,10 +5,13 @@ from flask import render_template
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
 from werkzeug.security import check_password_hash, generate_password_hash
+import os
 
 app = Flask(__name__)
 mysql = MySQL(cursorclass=DictCursor)
+picFolder = os.path.join('static', 'images')
 
+app.config['UPLOAD_FOLDER'] = picFolder
 app.config['MYSQL_DATABASE_HOST'] = 'db'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
@@ -65,7 +68,9 @@ def records():
 @app.route('/teampage', methods=['GET'])
 def teampage():
     cursor = mysql.get_db().cursor()
-    return render_template('teampage.html', title='teampage')
+    teamPic_michael = os.path.join(app.config['UPLOAD_FOLDER'], 'BackgroundPic.jpg')
+    teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
+    return render_template('teampage.html', title='teampage', michael = teamPic_michael, stanley = teamPic_stanley)
 
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
