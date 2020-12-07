@@ -5,10 +5,13 @@ from flask import render_template
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
 from werkzeug.security import check_password_hash, generate_password_hash
+import os
 
 app = Flask(__name__)
 mysql = MySQL(cursorclass=DictCursor)
+picFolder = os.path.join('static', 'images')
 
+app.config['UPLOAD_FOLDER'] = picFolder
 app.config['MYSQL_DATABASE_HOST'] = 'db'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
@@ -48,15 +51,26 @@ def register_post():
     mysql.get_db().commit()
     return redirect("/", code=302)
 
-
-@app.route('/home', methods=['GET'])
+@app.route('/home', methods = ['GET'])
 def index():
+    user = {'username': 'Cities Project'}
+    cursor = mysql.get_db().cursor()
+    return render_template('index.html', title='Home', user=user)
+
+@app.route('/records', methods=['GET'])
+def records():
     user = {'username': 'Cities Project'}
     cursor = mysql.get_db().cursor()
     cursor.execute('SELECT * FROM tblCitiesImport')
     result = cursor.fetchall()
-    return render_template('index.html', title='Home', user=user, cities=result)
+    return render_template('records.html', title='Records', user=user, cities=result)
 
+@app.route('/teampage', methods=['GET'])
+def teampage():
+    cursor = mysql.get_db().cursor()
+    teamPic_michael = os.path.join(app.config['UPLOAD_FOLDER'], 'BackgroundPic.jpg')
+    teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
+    return render_template('teampage.html', title='teampage', michael = teamPic_michael, stanley = teamPic_stanley)
 
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
@@ -84,7 +98,7 @@ def form_update_post(city_id):
     %s, t.fldAbbreviation = %s, t.fldCapitalStatus = %s, t.fldPopulation = %s WHERE t.id = %s """
     cursor.execute(sql_update_query, inputData)
     mysql.get_db().commit()
-    return redirect("/home", code=302)
+    return redirect("/records", code=302)
 
 @app.route('/cities/new', methods=['GET'])
 def form_insert_get():
@@ -100,7 +114,7 @@ def form_insert_post():
     sql_insert_query = """INSERT INTO tblCitiesImport (fldName,fldLat,fldLong,fldCountry,fldAbbreviation,fldCapitalStatus,fldPopulation) VALUES (%s,%s, %s,%s, %s,%s, %s)"""
     cursor.execute(sql_insert_query, inputData)
     mysql.get_db().commit()
-    return redirect("/home", code=302)
+    return redirect("/records", code=302)
 
 
 @app.route('/delete/<int:city_id>', methods=['POST'])
@@ -109,7 +123,7 @@ def form_delete_post(city_id):
     sql_delete_query = """DELETE FROM tblCitiesImport WHERE id = %s """
     cursor.execute(sql_delete_query, city_id)
     mysql.get_db().commit()
-    return redirect("/home", code=302)
+    return redirect("/records", code=302)
 
 
 

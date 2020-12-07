@@ -1,31 +1,23 @@
 {% extends "layout.html" %}
 {% block content %}
-<table class="table">
-    <thead>
-    <tr>
-        <th scope="col">ID</th>
-        <th scope="col">City Name</th>
-        <th scope="col">Latitude</th>
-        <th scope="col">Longitude</th>
-        <th scope="col">Country</th>
-        <th scope="col">Abbreviation</th>
-        <th scope="col">Capital Status</th>
-        <th scope="col">Population</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for city in cities %}
-    <tr>
-        <td>{{ city.id }}</td>
-        <td><a href="view/{{city.id}}">{{ city.fldName }}</a></td>
-        <td>{{ city.fldLat }}</td>
-        <td>{{ city.fldLong }}</td>
-        <td>{{ city.fldCountry }}</td>
-        <td>{{ city.fldAbbreviation }}</td>
-        <td>{{ city.fldCapitalStatus }}</td>
-        <td>{{ city.fldPopulation }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="jumbotron jumbotron-fluid" style="background-color: white">
+    <div class="container">
+        <h1 class="display-3">Cities Around the World</h1>
+        <br>
+        <p class="lead">
+            Welcome to our website!
+            <br><br>
+            This website is about cities around the world.
+            <br><br>
+            Click the links on the Nav Bar or the buttons below to view the data records, the team page, and the raw
+            data.
+            <br><br>
+            Finally, you can add new records using the "Add" button on the Nav Bar. You will also be able to view and
+            edit your profile data by clicking on the "my profile" tab.
+        </p>
+        <a class="btn btn-dark" href="/records" role="button">View Records</a>
+        <a class="btn btn-dark" href="/teampage" role="button">View TeamPage</a>
+        <a class="btn btn-dark" href="/api/v1/cities" role="button">View Data</a>
+    </div>
+</div>
 {% endblock %}
