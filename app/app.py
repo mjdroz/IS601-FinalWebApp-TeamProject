@@ -12,6 +12,7 @@ mysql = MySQL(cursorclass=DictCursor)
 picFolder = os.path.join('static', 'images')
 
 app.config['UPLOAD_FOLDER'] = picFolder
+
 app.config['MYSQL_DATABASE_HOST'] = 'db'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
@@ -34,12 +35,14 @@ def login():
                 if password == 'adminpwd':
                     return redirect("/home", code=302)
             if check_password_hash(result,password):
-                #Fix at a later date
-                #login_user(username, remember=form.remember.data)
                 return redirect("/home", code=302)
         except TypeError:
             abort(500)
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    return redirect('/', code=302)
 
 @app.route('/register', methods=['GET'])
 def register_get():
@@ -58,7 +61,7 @@ def register_post():
 
 @app.route('/home', methods = ['GET'])
 def index():
-    user = {'username': 'Cities Project'}
+    user = {'username': 'filler for rn'}
     title = "Home"
     return render_template('index.html', title=title, user=user)
 
