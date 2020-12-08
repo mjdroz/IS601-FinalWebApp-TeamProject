@@ -1,6 +1,6 @@
 from typing import List, Dict
 import simplejson as json
-from flask import Flask, request, Response, redirect, abort
+from flask import Flask, request, Response, redirect, abort, session
 from flask import render_template
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
@@ -12,7 +12,7 @@ mysql = MySQL(cursorclass=DictCursor)
 picFolder = os.path.join('static', 'images')
 
 app.config['UPLOAD_FOLDER'] = picFolder
-
+app.config['SECRET_KEY'] = 'the random string'
 app.config['MYSQL_DATABASE_HOST'] = 'db'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
@@ -25,6 +25,7 @@ def login():
     if request.method == ('POST'):
         cursor = mysql.get_db().cursor()
         username = request.form['username']
+        session["user"]= username
         password = request.form['password']
         sql_query = ('SELECT * FROM users u WHERE u.username = %s')
         userData = (username,)
@@ -61,13 +62,19 @@ def register_post():
 
 @app.route('/home', methods = ['GET'])
 def index():
-    user = {'username': 'filler for rn'}
+    if "user" in session:
+        user = {'username': session["user"]}
+    else:
+        user = {'username': 'This didnt work'}
     title = "Home"
     return render_template('index.html', title=title, user=user)
 
 @app.route('/records', methods=['GET'])
 def records():
-    user = {'username': 'Cities Project'}
+    if "user" in session:
+        user = {'username': session["user"]}
+    else:
+        user = {'username': 'This didnt work'}
     cursor = mysql.get_db().cursor()
     cursor.execute('SELECT * FROM tblCitiesImport')
     result = cursor.fetchall()
@@ -75,7 +82,6 @@ def records():
 
 @app.route('/teampage', methods=['GET'])
 def teampage():
-    cursor = mysql.get_db().cursor()
     teamPic_michael = os.path.join(app.config['UPLOAD_FOLDER'], 'BackgroundPic.jpg')
     teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
     return render_template('teampage.html', title='Team Page', michael = teamPic_michael, stanley = teamPic_stanley)
