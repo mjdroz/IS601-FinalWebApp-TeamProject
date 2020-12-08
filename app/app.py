@@ -1,6 +1,6 @@
 from typing import List, Dict
 import simplejson as json
-from flask import Flask, request, Response, redirect
+from flask import Flask, request, Response, redirect, abort
 from flask import render_template
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
@@ -28,12 +28,17 @@ def login():
         sql_query = ('SELECT * FROM users u WHERE u.username = %s')
         userData = (username,)
         cursor.execute(sql_query,userData)
-        result = cursor.fetchone()['passwordHash']
-        if username == 'admin':
-            if password == 'adminpwd':
+        try:
+            result = cursor.fetchone()['passwordHash']
+            if username == 'admin':
+                if password == 'adminpwd':
+                    return redirect("/home", code=302)
+            if check_password_hash(result,password):
+                #Fix at a later date
+                #login_user(username, remember=form.remember.data)
                 return redirect("/home", code=302)
-        if check_password_hash(result,password):
-            return redirect("/home", code=302)
+        except TypeError:
+            abort(500)
     return render_template('login.html')
 
 @app.route('/register', methods=['GET'])
@@ -71,6 +76,10 @@ def teampage():
     teamPic_michael = os.path.join(app.config['UPLOAD_FOLDER'], 'BackgroundPic.jpg')
     teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
     return render_template('teampage.html', title='Team Page', michael = teamPic_michael, stanley = teamPic_stanley)
+
+@app.errorhandler(500)
+def login_error(e):
+    return render_template("login-failed.html")
 
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
