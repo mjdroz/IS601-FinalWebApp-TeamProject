@@ -5,14 +5,28 @@ from flask import render_template
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_mail import Mail, Message
 import os
 
 app = Flask(__name__)
 mysql = MySQL(cursorclass=DictCursor)
 picFolder = os.path.join('static', 'images')
 
+#email setup
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": os.environ['MAIL_USERNAME'],
+    "MAIL_PASSWORD": os.environ['MAIL_PASSWORD']
+}
+
+app.config.update(mail_settings)
+mail = Mail(app)
+
 app.config['UPLOAD_FOLDER'] = picFolder
-app.config['SECRET_KEY'] = 'the random string'
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['MYSQL_DATABASE_HOST'] = 'db'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
@@ -59,6 +73,14 @@ def register_post():
     sql_insert_query = """INSERT INTO users (username, email, passwordHash) VALUES (%s,%s, %s)"""
     cursor.execute(sql_insert_query, inputData)
     mysql.get_db().commit()
+    msg = Message(subject="Hello",
+                  sender=app.config.get("MAIL_USERNAME"),
+                  recipients=[request.form['email']],
+                  body="Thank you for signing up to our website. Please find the confirmation code below and enter that on the confirmation page."
+                       "Confirmation Code:"
+                       "12345")
+                    #change message body later to check for confirmation code
+    mail.send(msg)
     return redirect("/", code=302)
 
 @app.route('/home', methods = ['GET'])
