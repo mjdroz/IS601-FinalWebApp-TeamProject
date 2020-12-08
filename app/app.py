@@ -38,8 +38,8 @@ def login():
 
 @app.route('/register', methods=['GET'])
 def register_get():
-    cursor = mysql.get_db().cursor()
-    return render_template('register.html', title='Registration')
+    title = "Registration"
+    return render_template('register.html', title=title)
 
 @app.route('/register', methods=['POST'])
 def register_post():
@@ -54,8 +54,8 @@ def register_post():
 @app.route('/home', methods = ['GET'])
 def index():
     user = {'username': 'Cities Project'}
-    cursor = mysql.get_db().cursor()
-    return render_template('index.html', title='Home', user=user)
+    title = "Home"
+    return render_template('index.html', title=title, user=user)
 
 @app.route('/records', methods=['GET'])
 def records():
@@ -70,7 +70,7 @@ def teampage():
     cursor = mysql.get_db().cursor()
     teamPic_michael = os.path.join(app.config['UPLOAD_FOLDER'], 'BackgroundPic.jpg')
     teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
-    return render_template('teampage.html', title='teampage', michael = teamPic_michael, stanley = teamPic_stanley)
+    return render_template('teampage.html', title='Team Page', michael = teamPic_michael, stanley = teamPic_stanley)
 
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
