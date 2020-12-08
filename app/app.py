@@ -25,7 +25,6 @@ def login():
     if request.method == ('POST'):
         cursor = mysql.get_db().cursor()
         username = request.form['username']
-        session["user"]= username
         password = request.form['password']
         sql_query = ('SELECT * FROM users u WHERE u.username = %s')
         userData = (username,)
@@ -34,8 +33,10 @@ def login():
             result = cursor.fetchone()['passwordHash']
             if username == 'admin':
                 if password == 'adminpwd':
+                    session["user"] = username
                     return redirect("/home", code=302)
             if check_password_hash(result,password):
+                session["user"] = username
                 return redirect("/home", code=302)
         except TypeError:
             abort(500)
