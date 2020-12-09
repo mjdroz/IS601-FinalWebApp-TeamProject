@@ -257,5 +257,3 @@ CREATE TABLE IF NOT EXISTS users (
     `passwordHash` VARCHAR(99) CHARACTER SET utf8,
     PRIMARY KEY (`id`)
 );
-INSERT INTO users (username, email, passwordHash) VALUES
-    ('admin','tester@gmail.com', 'adminpwd')

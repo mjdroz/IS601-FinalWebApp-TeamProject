@@ -1,6 +1,6 @@
 from typing import List, Dict
 import simplejson as json
-from flask import Flask, request, Response, redirect, abort, session
+from flask import Flask, request, Response, redirect, abort, session, flash
 from flask import render_template
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
@@ -45,12 +45,12 @@ def login():
         userData = (username,)
         cursor.execute(sql_query,userData)
         try:
-            result = cursor.fetchone()['passwordHash']
-            if username == 'admin':
-                if password == 'adminpwd':
+            if username == os.environ['ADMIN_USER']:
+                if password == os.environ['ADMIN_PASS']:
                     session["user"] = username
                     return redirect("/home", code=302)
-            if check_password_hash(result,password):
+            result = cursor.fetchone()['passwordHash']
+            if check_password_hash(result, password):
                 session["user"] = username
                 return redirect("/home", code=302)
         except TypeError:
@@ -59,6 +59,9 @@ def login():
 
 @app.route('/logout')
 def logout():
+    if "user" in session:
+        flash("You have been logged out", "info")
+    session.pop("user", None)
     return redirect('/', code=302)
 
 @app.route('/register', methods=['GET'])
