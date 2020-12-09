@@ -54,7 +54,7 @@ def login():
                 session["user"] = username
                 return redirect("/home", code=302)
         except TypeError:
-            abort(500)
+            flash("Login Failed. Try Again.", "info")
     return render_template('login.html')
 
 @app.route('/logout')
@@ -129,10 +129,6 @@ def teampage():
     teamPic_michael = os.path.join(app.config['UPLOAD_FOLDER'], 'BackgroundPic.jpg')
     teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
     return render_template('teampage.html', title='Team Page', michael = teamPic_michael, stanley = teamPic_stanley)
-
-@app.errorhandler(500)
-def login_error(e):
-    return render_template("login-failed.html")
 
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
