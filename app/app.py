@@ -54,7 +54,7 @@ def login():
                 session["user"] = username
                 return redirect("/home", code=302)
         except TypeError:
-            flash("Login Failed. Try Again.", "info")
+            flash("Login Failed. Try Again.", "danger")
     return render_template('login.html')
 
 @app.route('/logout')

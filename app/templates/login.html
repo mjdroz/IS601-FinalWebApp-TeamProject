@@ -21,10 +21,10 @@
             <form class="form-signin" method="post">
                 <h1>Welcome to Our Website!</h1>
                 <h1>Please Sign in to Your Account Below</h1>
-                {% with messages = get_flashed_messages() %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
-                        {% for msg in messages %}
-                            <p>{{msg}}</p>
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" role="alert"> {{ message }}</div>
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
