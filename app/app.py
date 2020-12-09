@@ -53,14 +53,16 @@ def login():
             if check_password_hash(result, password):
                 session["user"] = username
                 return redirect("/home", code=302)
+            else:
+                flash("Login Failed. Try Again.", "danger")
         except TypeError:
-            flash("Login Failed. Try Again.", "danger")
+            flash("That Username Does Not Exist. Please Register an Account and Confirm Your Email!", "danger")
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     if "user" in session:
-        flash("You have been logged out", "info")
+        flash("You have been logged out.", "info")
     session.pop("user", None)
     return redirect('/', code=302)
 
@@ -92,7 +94,10 @@ def confirm_email():
     if request.method == ('POST'):
         code = request.form['code']
         if code == session['code']:
+            flash("Your email has been verified. Thank you.", "success")
             return redirect('/', code=302)
+        else:
+            flash("The code you entered and the code sent to your email are not the same. Please retry!", "danger")
         '''if request.form.get("resend"):
             msg = Message(subject="Mike and Stanley's Website Confirmation Code",
                           sender=app.config.get("MAIL_USERNAME"),

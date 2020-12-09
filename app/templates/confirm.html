@@ -13,22 +13,28 @@
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" rel="stylesheet">
     <title>Confirm Your Email</title>
 </head>
-
+{% block content %}
 <body>
 <div class="d-flex justify-content-center align-items-center">
     <div class="grandParentContainer">
         <div class="parentContainer">
             <form class="form-signin" method="post">
                 <h1>Please Type the Verification Code Sent to Your Email Below:</h1>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" role="alert"> {{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <label for="inputUsername">Enter Code:</label><input type="text" id="inputUsername" class="form-control"
                                                                   placeholder="Confirmation Code" name="code" required>
                 <br>
-                <a href="/">
-                    <button type="button" class="btn btn-success">Proceed To Login</button>
-                </a>
+                <button class="btn btn-success" type="submit">Confirm Code</button>
             </form>
         </div>
     </div>
 </div>
 </body>
+{% endblock %}
 </html>
