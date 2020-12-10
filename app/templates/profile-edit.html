@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<form action="/profile-edit" method="post">
+<div class="row">
+    <div class="col">
+        <label for="username">Username</label>
+        <input id="username" type="text" class="form-control" placeholder="username" name="username" value="{{profile.username}}">
+    </div>
+    <div class="col">
+        <label for="email">Email</label>
+        <input id="email" type="text" class="form-control" placeholder="email"
+               name="email" value="{{profile.email}}">
+    </div>
+</div>
+    <br>
+        <button type="submit" class="btn btn-success">Save</button>
+</form>
+
+
+{% endblock %}

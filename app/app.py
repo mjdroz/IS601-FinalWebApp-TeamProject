@@ -135,7 +135,7 @@ def teampage():
     teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
     return render_template('teampage.html', title='Team Page', michael = teamPic_michael, stanley = teamPic_stanley)
 
-@app.route('/profile', methods=['GET', 'POST'])
+@app.route('/profile', methods=['GET'])
 def profile():
     if "user" in session:
         user = {'username': session["user"]}
@@ -145,6 +145,27 @@ def profile():
     cursor.execute('SELECT username, email FROM users WHERE username=%s', session["user"])
     result = cursor.fetchall()
     return render_template('profile-page.html', title='Profile Page', user=user, profile = result[0])
+
+@app.route('/profile-edit', methods=['GET'])
+def edit_profile_get():
+    if "user" in session:
+        user = {'username': session["user"]}
+    else:
+        user = {'username': 'This didnt work'}
+    cursor = mysql.get_db().cursor()
+    cursor.execute('SELECT username, email FROM users WHERE username=%s', session["user"])
+    result = cursor.fetchall()
+    return render_template('profile-edit.html', title='Edit Profile', user=user, profile = result[0])
+
+
+@app.route('/profile-edit', methods=['POST'])
+def edit_profile_post():
+    cursor = mysql.get_db().cursor()
+    inputData = (request.form.get('username'), request.form.get('email'), request.form.get('username'))
+    sql_update_query = """UPDATE users u SET u.username = %s, u.email = %s WHERE u.username = %s """
+    cursor.execute(sql_update_query, inputData)
+    mysql.get_db().commit()
+    return redirect("/profile", code=302)
 
 
 @app.route('/view/<int:city_id>', methods=['GET'])
