@@ -2,8 +2,12 @@
 {% block content %}
 
 <div class="card" class="m-5 p-2">
-        <div class="card-body">
-        <a href="/edit/{{city.id}}" class="card-link btn btn-primary">Edit</a>
+    <div class="card-body">
+        <h1>{% if user %}{{ user.username }}'s Profile{% else %}
+            profile page
+        {% endif %}</h1>
+        <p>This is a test of the profile page</p>
+        <a href="/edit/" class="card-link btn btn-primary">Edit</a>
         <a href="/home" class="card-link btn btn-secondary">Go Back!</a>
     </div>
 </div>

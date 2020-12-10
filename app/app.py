@@ -137,7 +137,10 @@ def teampage():
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    user = session["user"]
+    if "user" in session:
+        user = {'username': session["user"]}
+    else:
+        user = {'username': 'This didnt work'}
     return render_template('profile-page.html', title='Profile Page', user=user)
 
 
