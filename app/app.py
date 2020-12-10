@@ -1,17 +1,33 @@
 from typing import List, Dict
 import simplejson as json
-from flask import Flask, request, Response, redirect
+from flask import Flask, request, Response, redirect, abort, session, flash
 from flask import render_template
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_mail import Mail, Message
 import os
+import random
 
 app = Flask(__name__)
 mysql = MySQL(cursorclass=DictCursor)
 picFolder = os.path.join('static', 'images')
 
+#email setup
+mail_settings = {
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME": os.environ['MAIL_USERNAME'],
+    "MAIL_PASSWORD": os.environ['MAIL_PASSWORD']
+}
+
+app.config.update(mail_settings)
+mail = Mail(app)
+
 app.config['UPLOAD_FOLDER'] = picFolder
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['MYSQL_DATABASE_HOST'] = 'db'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
@@ -28,38 +44,86 @@ def login():
         sql_query = ('SELECT * FROM users u WHERE u.username = %s')
         userData = (username,)
         cursor.execute(sql_query,userData)
-        result = cursor.fetchone()['passwordHash']
-        if username == 'admin':
-            if password == 'adminpwd':
+        try:
+            if username == os.environ['ADMIN_USER']:
+                if password == os.environ['ADMIN_PASS']:
+                    session["user"] = username
+                    return redirect("/home", code=302)
+            result = cursor.fetchone()['passwordHash']
+            if check_password_hash(result, password):
+                session["user"] = username
                 return redirect("/home", code=302)
-        if check_password_hash(result,password):
-            return redirect("/home", code=302)
+            else:
+                flash("Login Failed. Try Again.", "danger")
+        except TypeError:
+            flash("That Username Does Not Exist. Please Register an Account and Confirm Your Email!", "danger")
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    if "user" in session:
+        flash("You have been logged out.", "info")
+    session.pop("user", None)
+    return redirect('/', code=302)
 
 @app.route('/register', methods=['GET'])
 def register_get():
-    cursor = mysql.get_db().cursor()
-    return render_template('register.html', title='Registration')
+    title = "Registration"
+    return render_template('register.html', title=title)
 
 @app.route('/register', methods=['POST'])
 def register_post():
     cursor = mysql.get_db().cursor()
-    hash_pass = generate_password_hash(str(request.form['password']),"sha256")
-    inputData = (request.form['username'],request.form['email'],hash_pass)
+    hash_pass = generate_password_hash(str(request.form['password']), "sha256")
     sql_insert_query = """INSERT INTO users (username, email, passwordHash) VALUES (%s,%s, %s)"""
+    inputData = (request.form['username'], request.form['email'], hash_pass)
     cursor.execute(sql_insert_query, inputData)
     mysql.get_db().commit()
-    return redirect("/", code=302)
+    session['code'] = str(random.randint(1000, 9999))
+    msg = Message(subject="Mike and Stanley's Website Confirmation Code",
+                  sender=app.config.get("MAIL_USERNAME"),
+                  recipients=[request.form['email']],
+                  body="Thank you for signing up to our website. Please find the confirmation code below and enter that on the confirmation page."
+                       "Confirmation Code:" +
+                       session['code'])
+    mail.send(msg)
+    return redirect("/confirm", code=302)
+
+@app.route('/confirm', methods=['GET', 'POST'])
+def confirm_email():
+    if request.method == ('POST'):
+        code = request.form['code']
+        if code == session['code']:
+            flash("Your email has been verified. Thank you.", "success")
+            return redirect('/', code=302)
+        else:
+            flash("The code you entered and the code sent to your email are not the same. Please retry!", "danger")
+        '''if request.form.get("resend"):
+            msg = Message(subject="Mike and Stanley's Website Confirmation Code",
+                          sender=app.config.get("MAIL_USERNAME"),
+                          recipients=[request.form['email']],
+                          body="Thank you for signing up to our website TOBEY. Please find the confirmation code below and enter that on the confirmation page."
+                               "Confirmation Code:" +
+                               session['code'])
+            mail.send(msg)'''
+        #change to work at later date
+    return render_template('confirm.html')
 
 @app.route('/home', methods = ['GET'])
 def index():
-    user = {'username': 'Cities Project'}
-    cursor = mysql.get_db().cursor()
-    return render_template('index.html', title='Home', user=user)
+    if "user" in session:
+        user = {'username': session["user"]}
+    else:
+        user = {'username': 'This didnt work'}
+    title = "Home"
+    return render_template('index.html', title=title, user=user)
 
 @app.route('/records', methods=['GET'])
 def records():
-    user = {'username': 'Cities Project'}
+    if "user" in session:
+        user = {'username': session["user"]}
+    else:
+        user = {'username': 'This didnt work'}
     cursor = mysql.get_db().cursor()
     cursor.execute('SELECT * FROM tblCitiesImport')
     result = cursor.fetchall()
@@ -67,10 +131,9 @@ def records():
 
 @app.route('/teampage', methods=['GET'])
 def teampage():
-    cursor = mysql.get_db().cursor()
     teamPic_michael = os.path.join(app.config['UPLOAD_FOLDER'], 'BackgroundPic.jpg')
     teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
-    return render_template('teampage.html', title='teampage', michael = teamPic_michael, stanley = teamPic_stanley)
+    return render_template('teampage.html', title='Team Page', michael = teamPic_michael, stanley = teamPic_stanley)
 
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
