@@ -161,12 +161,14 @@ def edit_profile_get():
 @app.route('/profile-edit', methods=['POST'])
 def edit_profile_post():
     cursor = mysql.get_db().cursor()
-    inputData = (request.form.get('username'), request.form.get('email'), request.form.get('username'))
+    inputData = (request.form.get('username'), request.form.get('email'), session["user"])
     sql_update_query = """UPDATE users u SET u.username = %s, u.email = %s WHERE u.username = %s """
     cursor.execute(sql_update_query, inputData)
     mysql.get_db().commit()
+    cursor.execute('SELECT username FROM users WHERE username=%s', request.form.get('username'))
+    new_username = cursor.fetchone()['username']
+    session["user"] = new_username
     return redirect("/profile", code=302)
-
 
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
