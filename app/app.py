@@ -141,7 +141,10 @@ def profile():
         user = {'username': session["user"]}
     else:
         user = {'username': 'This didnt work'}
-    return render_template('profile-page.html', title='Profile Page', user=user)
+    cursor = mysql.get_db().cursor()
+    cursor.execute('SELECT username, email FROM users WHERE username=%s', session["user"])
+    result = cursor.fetchall()
+    return render_template('profile-page.html', title='Profile Page', user=user, profile = result[0])
 
 
 @app.route('/view/<int:city_id>', methods=['GET'])
