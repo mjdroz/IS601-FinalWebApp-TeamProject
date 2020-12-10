@@ -135,6 +135,12 @@ def teampage():
     teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
     return render_template('teampage.html', title='Team Page', michael = teamPic_michael, stanley = teamPic_stanley)
 
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    user = session["user"]
+    return render_template('profile-page.html', title='Profile Page', user=user)
+
+
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
     cursor = mysql.get_db().cursor()
