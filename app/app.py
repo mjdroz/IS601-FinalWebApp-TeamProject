@@ -59,7 +59,7 @@ def login():
             else:
                 flash("Login Failed. Try Again.", "danger")
         except IndexError:
-            flash("That Username Does Not Exist Or You Did Not Confirm Your Email. Please Register an Account and Confirm Your Email!", "danger")
+            flash("Account Not Confirmed. Please Register an Account and Confirm Your Email!", "danger")
     return render_template('login.html')
 
 @app.route('/logout')
@@ -85,12 +85,13 @@ def register_post():
     mysql.get_db().commit()
     session['user'] = request.form['username']
     session['email'] = request.form['email']
-    session['code'] = str(random.randint(1000, 9999))
+    session['code'] = generate_password_hash(str(session), "sha256")
     msg = Message(subject="Mike and Stanley's Website Confirmation Code",
                   sender=app.config.get("MAIL_USERNAME"),
                   recipients=[session['email']],
-                  body="Thank you for signing up to our website. Please find the confirmation code below and enter that on the confirmation page."
-                       "Confirmation Code:" +
+                  body="Thank you for signing up to our website. "
+                       "Please find the confirmation code below and enter that on the confirmation page.\n\n"
+                       "Confirmation Code: " +
                        session['code'])
     mail.send(msg)
     return redirect("/confirm", code=302)
@@ -110,15 +111,6 @@ def confirm_email():
             return redirect('/', code=302)
         else:
             flash("The code you entered and the code sent to your email are not the same. Please retry!", "danger")
-        '''if request.form.get("resend"):
-            msg = Message(subject="Mike and Stanley's Website Confirmation Code",
-                          sender=app.config.get("MAIL_USERNAME"),
-                          recipients=[request.form['email']],
-                          body="Thank you for signing up to our website TOBEY. Please find the confirmation code below and enter that on the confirmation page."
-                               "Confirmation Code:" +
-                               session['code'])
-            mail.send(msg)'''
-        #change to work at later date
     return render_template('confirm.html')
 
 @app.route('/home', methods = ['GET'])
