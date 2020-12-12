@@ -255,5 +255,6 @@ CREATE TABLE IF NOT EXISTS users (
     `username` VARCHAR(21) CHARACTER SET utf8,
     `email` VARCHAR(99) CHARACTER SET utf8,
     `passwordHash` VARCHAR(99) CHARACTER SET utf8,
+    `confirmed` VARCHAR(99) CHARACTER SET utf8,
     PRIMARY KEY (`id`)
 );

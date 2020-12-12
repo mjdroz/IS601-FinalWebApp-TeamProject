@@ -43,20 +43,23 @@ def login():
         password = request.form['password']
         sql_query = ('SELECT * FROM users u WHERE u.username = %s')
         userData = (username,)
-        cursor.execute(sql_query,userData)
+        cursor.execute(sql_query, userData)
         try:
             if username == os.environ['ADMIN_USER']:
                 if password == os.environ['ADMIN_PASS']:
                     session["user"] = username
                     return redirect("/home", code=302)
-            result = cursor.fetchone()['passwordHash']
-            if check_password_hash(result, password):
-                session["user"] = username
-                return redirect("/home", code=302)
+            result = cursor.fetchall()
+            hash_pass = result[0]['passwordHash']
+            confirmed = result[0]['confirmed']
+            if check_password_hash(hash_pass, password):
+                if confirmed == "yes":
+                    session["user"] = username
+                    return redirect("/home", code=302)
             else:
                 flash("Login Failed. Try Again.", "danger")
-        except TypeError:
-            flash("That Username Does Not Exist. Please Register an Account and Confirm Your Email!", "danger")
+        except IndexError:
+            flash("That Username Does Not Exist Or You Did Not Confirm Your Email. Please Register an Account and Confirm Your Email!", "danger")
     return render_template('login.html')
 
 @app.route('/logout')
@@ -75,14 +78,17 @@ def register_get():
 def register_post():
     cursor = mysql.get_db().cursor()
     hash_pass = generate_password_hash(str(request.form['password']), "sha256")
-    sql_insert_query = """INSERT INTO users (username, email, passwordHash) VALUES (%s,%s, %s)"""
-    inputData = (request.form['username'], request.form['email'], hash_pass)
+    sql_insert_query = """INSERT INTO users (username, email, passwordHash, confirmed) VALUES (%s,%s,%s,%s)"""
+    confirmed = "no"
+    inputData = (request.form['username'], request.form['email'], hash_pass, confirmed)
     cursor.execute(sql_insert_query, inputData)
     mysql.get_db().commit()
+    session['user'] = request.form['username']
+    session['email'] = request.form['email']
     session['code'] = str(random.randint(1000, 9999))
     msg = Message(subject="Mike and Stanley's Website Confirmation Code",
                   sender=app.config.get("MAIL_USERNAME"),
-                  recipients=[request.form['email']],
+                  recipients=[session['email']],
                   body="Thank you for signing up to our website. Please find the confirmation code below and enter that on the confirmation page."
                        "Confirmation Code:" +
                        session['code'])
@@ -92,8 +98,14 @@ def register_post():
 @app.route('/confirm', methods=['GET', 'POST'])
 def confirm_email():
     if request.method == ('POST'):
+        cursor = mysql.get_db().cursor()
         code = request.form['code']
         if code == session['code']:
+            sql_update_query = """UPDATE users u SET u.confirmed = %s WHERE u.username = %s """
+            confirmed = "yes"
+            inputData = (confirmed, session['user'])
+            cursor.execute(sql_update_query, inputData)
+            mysql.get_db().commit()
             flash("Your email has been verified. Thank you.", "success")
             return redirect('/', code=302)
         else:
@@ -133,7 +145,7 @@ def records():
 def teampage():
     teamPic_michael = os.path.join(app.config['UPLOAD_FOLDER'], 'BackgroundPic.jpg')
     teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
-    return render_template('teampage.html', title='Team Page', michael = teamPic_michael, stanley = teamPic_stanley)
+    return render_template('teampage.html', title='Team Page', michael=teamPic_michael, stanley=teamPic_stanley)
 
 @app.route('/profile', methods=['GET'])
 def profile():
@@ -144,7 +156,7 @@ def profile():
     cursor = mysql.get_db().cursor()
     cursor.execute('SELECT username, email FROM users WHERE username=%s', session["user"])
     result = cursor.fetchall()
-    return render_template('profile-page.html', title='Profile Page', user=user, profile = result[0])
+    return render_template('profile-page.html', title='Profile Page', user=user, profile=result[0])
 
 @app.route('/profile-edit', methods=['GET'])
 def edit_profile_get():
@@ -155,7 +167,7 @@ def edit_profile_get():
     cursor = mysql.get_db().cursor()
     cursor.execute('SELECT username, email FROM users WHERE username=%s', session["user"])
     result = cursor.fetchall()
-    return render_template('profile-edit.html', title='Edit Profile', user=user, profile = result[0])
+    return render_template('profile-edit.html', title='Edit Profile', user=user, profile=result[0])
 
 
 @app.route('/profile-edit', methods=['POST'])
