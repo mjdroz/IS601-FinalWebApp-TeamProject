@@ -188,8 +188,9 @@ def new_pass():
         sql_update_query = """UPDATE users u SET u.passwordHash = %s WHERE u.username = %s """
         cursor.execute(sql_update_query, inputData)
         mysql.get_db().commit()
-        return redirect("/profile", code=302)
-    return render_template('password.html', title='PASSWORD CHANGE', user=user)
+        flash("You have successfully changed your password. Please log back in!", "info")
+        return redirect("/logout", code=302)
+    return render_template('password.html', title='Password Change', user=user)
 
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
