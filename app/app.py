@@ -174,6 +174,23 @@ def edit_profile_post():
     session["user"] = new_username
     return redirect("/profile", code=302)
 
+
+@app.route('/new-password', methods=['GET', 'POST'])
+def new_pass():
+    if "user" in session:
+        user = {'username': session["user"]}
+    else:
+        user = {'username': 'This didnt work'}
+    if request.method == ('POST'):
+        cursor = mysql.get_db().cursor()
+        hash_pass = generate_password_hash(str(request.form['password']), "sha256")
+        inputData = (hash_pass, session["user"])
+        sql_update_query = """UPDATE users u SET u.passwordHash = %s WHERE u.username = %s """
+        cursor.execute(sql_update_query, inputData)
+        mysql.get_db().commit()
+        return redirect("/profile", code=302)
+    return render_template('password.html', title='PASSWORD CHANGE', user=user)
+
 @app.route('/view/<int:city_id>', methods=['GET'])
 def record_view(city_id):
     cursor = mysql.get_db().cursor()
