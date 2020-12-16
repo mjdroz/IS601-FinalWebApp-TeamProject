@@ -24,6 +24,12 @@
 1. Clone this Github repository to your local machine (Note: You must have Docker Desktop installed)
 2. Download the ".env" file from the canvas submission and place it in the directory/folder where the cloned project is stored
 3. Run the program by having a docker-compose configuration on Pycharm or by running a "docker-compose up" command on the "main" branch
-4. Go to localhost:5000 or 0.0.0.0:5000 to view the web application 
-5. Register an account, login, and enjoy!
- 
+4. Go to localhost:5000 or 0.0.0.0:5000 to view the web application
+5. Register a new account with a username, password, and a **valid** email that you have access to
+6. Once you click register and you will receive the confirmation code in an email from "mikeandstanley.website@gmail.com"
+7. Copy and paste the confirmation code into the box on the confirmation page
+8. Once confirmed, you can login into the account that you just registered 
+9. Enjoy!
+
+## Developer Notes
+Our gmail account information as well as admin account information is inside of the .env file. You can log into the admin account by using the credentials inside of the .env file.
