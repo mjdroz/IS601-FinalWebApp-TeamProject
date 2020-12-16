@@ -1,13 +1,11 @@
-from typing import List, Dict
 import simplejson as json
-from flask import Flask, request, Response, redirect, abort, session, flash
+from flask import Flask, request, Response, redirect, session, flash
 from flask import render_template
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_mail import Mail, Message
 import os
-import random
 
 app = Flask(__name__)
 mysql = MySQL(cursorclass=DictCursor)
