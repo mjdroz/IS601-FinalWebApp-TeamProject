@@ -135,14 +135,22 @@ def records():
 
 @app.route('/teampage', methods=['GET'])
 def teampage():
+    if "user" in session:
+        user = {'username': session["user"]}
+    else:
+        user = {'username': 'This didnt work'}
     teamPic_michael = os.path.join(app.config['UPLOAD_FOLDER'], 'BackgroundPic.jpg')
     teamPic_stanley = os.path.join(app.config['UPLOAD_FOLDER'], 'DSC_0928.jpg')
-    return render_template('teampage.html', title='Team Page', michael=teamPic_michael, stanley=teamPic_stanley)
+    return render_template('teampage.html', title='Team Page', michael=teamPic_michael, stanley=teamPic_stanley, user=user)
 
 @app.route('/profile', methods=['GET'])
 def profile():
     if session["user"] == os.environ['ADMIN_USER']:
-        return render_template('admin-profile.html', title='Admin Profile', user=os.environ['ADMIN_USER'])
+        if "user" in session:
+            user = {'username': session["user"]}
+        else:
+            user = {'username': 'This didnt work'}
+        return render_template('admin-profile.html', title='Admin Profile', user=user)
     else:
         if "user" in session:
             user = {'username': session["user"]}
