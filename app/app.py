@@ -141,14 +141,17 @@ def teampage():
 
 @app.route('/profile', methods=['GET'])
 def profile():
-    if "user" in session:
-        user = {'username': session["user"]}
+    if session["user"] == os.environ['ADMIN_USER']:
+        return render_template('admin-profile.html', title='Admin Profile', user=os.environ['ADMIN_USER'])
     else:
-        user = {'username': 'This didnt work'}
-    cursor = mysql.get_db().cursor()
-    cursor.execute('SELECT username, email FROM users WHERE username=%s', session["user"])
-    result = cursor.fetchall()
-    return render_template('profile-page.html', title='Profile Page', user=user, profile=result[0])
+        if "user" in session:
+            user = {'username': session["user"]}
+        else:
+            user = {'username': 'This didnt work'}
+        cursor = mysql.get_db().cursor()
+        cursor.execute('SELECT username, email FROM users WHERE username=%s', session["user"])
+        result = cursor.fetchall()
+        return render_template('profile-page.html', title='Profile Page', user=user, profile=result[0])
 
 @app.route('/profile-edit', methods=['GET'])
 def edit_profile_get():
