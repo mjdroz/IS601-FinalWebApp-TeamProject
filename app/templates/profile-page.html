@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="card" class="m-5 p-2">
+    <div class="card-body">
+        <h1>{% if user %}{{ user.username }}'s Profile{% else %}
+            profile page
+        {% endif %}</h1>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"> <strong>Username: </strong>{{ profile.username }}</li>
+            <li class="list-group-item"> <strong>Email: </strong>{{ profile.email }}</li>
+        </ul>
+        <br>
+        <a href="/new-password" class="card-link btn btn-danger">Change Password</a>
+        <a href="/profile-edit" class="card-link btn btn-primary">Edit</a>
+        <a href="/home" class="card-link btn btn-secondary">Go Back!</a>
+    </div>
+</div>
+
+
+{% endblock %}

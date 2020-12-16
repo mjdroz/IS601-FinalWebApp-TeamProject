@@ -11,7 +11,7 @@
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" rel="stylesheet">
-    <title>Welcome to Our Site! Please Login</title>
+    <title>Confirm Your Email</title>
 </head>
 {% block content %}
 <body>
@@ -19,8 +19,7 @@
     <div class="grandParentContainer">
         <div class="parentContainer">
             <form class="form-signin" method="post">
-                <h1>Welcome to Our Website!</h1>
-                <h1>Please Sign in to Your Account Below</h1>
+                <h1>Please Type the Email Verification Code Below:</h1>
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
@@ -28,17 +27,10 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                <label for="inputUsername">Username</label><input type="text" id="inputUsername" class="form-control"
-                                                                  placeholder="Username" name="username" required>
-                <label for="inputPassword">Password</label><input type="password" id="inputPassword"
-                                                                  class="form-control" placeholder="Password"
-                                                                  name="password"
-                                                                  required>
+                <label for="inputUsername">Enter Code:</label><input type="text" id="inputUsername" class="form-control"
+                                                                  placeholder="Confirmation Code" name="code" required>
                 <br>
-                <button class="btn btn-primary" type="submit">Sign in</button>
-                <a href="/register">
-                    <button type="button" class="btn btn-success">Create a New Account</button>
-                </a>
+                <button class="btn btn-success" type="submit">Confirm Code</button>
             </form>
         </div>
     </div>
